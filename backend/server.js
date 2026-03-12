@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const processRoutes = require("./routes/processRoutes");
 
 const systemRoutes = require("./routes/systemRoutes");
 
@@ -9,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/system", systemRoutes);
+app.use("/api/process", processRoutes);
 
 const PORT = 5000;
 
