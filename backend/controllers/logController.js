@@ -1,17 +1,33 @@
 const path = require("path");
 const runScript = require("../utils/scriptRunner");
 
-exports.viewLogs = async (req, res) => {
+exports.listLogs = async (req, res) => {
     try {
 
-        const logfile = req.query.file;
+        const script = path.join(__dirname, "../scripts/logs/list_logs.sh");
 
-        const script = path.join(__dirname, "../scripts/logs/view_logs.sh");
-
-        const output = await runScript(`${script} ${logfile}`);
+        const output = await runScript(script);
 
         res.json({
             logs: output
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.toString() });
+    }
+};
+
+exports.viewLog = async (req, res) => {
+    try {
+
+        const logFile = req.query.name;
+
+        const script = path.join(__dirname, "../scripts/logs/view_logs.sh");
+
+        const output = await runScript(`${script} ${logFile}`);
+
+        res.json({
+            content: output
         });
 
     } catch (error) {
