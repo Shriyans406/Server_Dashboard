@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { getCPU, getMemory, getDisk, getUptime } from "../api/systemApi";
 
+import ProcessTable from "./ProcessTable";
+import ServicePanel from "./ServicePanel";
+import LogViewer from "./LogViewer";
+
 function Dashboard() {
 
   const [cpu, setCPU] = useState("");
@@ -10,10 +14,18 @@ function Dashboard() {
 
   useEffect(() => {
 
-    getCPU().then(res => setCPU(res.data.value));
-    getMemory().then(res => setMemory(res.data.value));
-    getDisk().then(res => setDisk(res.data.value));
-    getUptime().then(res => setUptime(res.data.value));
+    const fetchMetrics = () => {
+      getCPU().then(res => setCPU(res.data.value));
+      getMemory().then(res => setMemory(res.data.value));
+      getDisk().then(res => setDisk(res.data.value));
+      getUptime().then(res => setUptime(res.data.value));
+    };
+
+    fetchMetrics();
+
+    const interval = setInterval(fetchMetrics, 5000);
+
+    return () => clearInterval(interval);
 
   }, []);
 
@@ -47,8 +59,12 @@ function Dashboard() {
         </div>
 
       </div>
+      <ProcessTable />
+      <ServicePanel />
+      <LogViewer />
 
     </div>
+
   );
 }
 
