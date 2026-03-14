@@ -1,71 +1,67 @@
 import { useEffect, useState } from "react";
-import { getProcesses, killProcess } from "../api/processApi";
+import axios from "axios";
 
 function ProcessTable() {
+  const [processes, setProcesses] = useState([]);
 
-    const [processes, setProcesses] = useState([]);
+  const fetchProcesses = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/process/list");
 
-    const loadProcesses = () => {
-        getProcesses().then(res => {
-            if (Array.isArray(res.data)) {
-                setProcesses(res.data);
-            } else if (res.data.processes) {
-                setProcesses(res.data.processes);
-            } else {
-                setProcesses([]);
-            }
-        });
-    };
+      const lines = res.data.processes.split("\n").slice(1);
 
-    useEffect(() => {
-        loadProcesses();
-    }, []);
+      const parsed = lines.map((line) => {
+        const parts = line.trim().split(/\s+/);
 
-    const handleKill = (pid) => {
-        killProcess(pid).then(() => {
-            loadProcesses();
-        });
-    };
+        return {
+          pid: parts[0],
+          command: parts[1],
+          cpu: parts[2],
+          mem: parts[3],
+        };
+      });
 
-    return (
-        <div className="mt-10">
+      setProcesses(parsed);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-            <h2 className="text-2xl font-bold mb-4">Running Processes</h2>
+  useEffect(() => {
+    fetchProcesses();
 
-            <table className="w-full border">
+    const interval = setInterval(fetchProcesses, 5000);
 
-                <thead>
-                    <tr className="bg-gray-200">
-                        <th>PID</th>
-                        <th>Command</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+    return () => clearInterval(interval);
+  }, []);
 
-                <tbody>
-                    {Array.isArray(processes) && processes.map((p, index) => (
-                        <tr key={index} className="border">
+  return (
+    <div>
+      <h2>Running Processes</h2>
 
-                            <td className="p-2">{p.pid}</td>
-                            <td className="p-2">{p.command}</td>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>PID</th>
+            <th>Command</th>
+            <th>CPU %</th>
+            <th>MEM %</th>
+          </tr>
+        </thead>
 
-                            <td>
-                                <button
-                                    className="bg-red-500 text-white px-3 py-1 rounded"
-                                    onClick={() => handleKill(p.pid)}
-                                >
-                                    Kill
-                                </button>
-                            </td>
-
-                        </tr>
-                    ))}
-                </tbody>
-
-            </table>
-
-        </div>
-    );
+        <tbody>
+          {processes.map((p, index) => (
+            <tr key={index}>
+              <td>{p.pid}</td>
+              <td>{p.command}</td>
+              <td>{p.cpu}</td>
+              <td>{p.mem}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default ProcessTable;

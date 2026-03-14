@@ -4,6 +4,25 @@ import { startService, stopService, restartService } from "../api/serviceApi";
 function ServicePanel() {
 
     const [service, setService] = useState("");
+    const [message, setMessage] = useState("");
+
+    const handleStart = () => {
+        startService(service).then(res => {
+            setMessage(res.data);
+        });
+    };
+
+    const handleStop = () => {
+        stopService(service).then(res => {
+            setMessage(res.data);
+        });
+    };
+
+    const handleRestart = () => {
+        restartService(service).then(res => {
+            setMessage(res.data);
+        });
+    };
 
     return (
         <div className="mt-10">
@@ -18,24 +37,26 @@ function ServicePanel() {
 
             <button
                 className="bg-green-500 text-white px-3 py-1 mr-2"
-                onClick={() => startService(service)}
+                onClick={handleStart}
             >
                 Start
             </button>
 
             <button
                 className="bg-yellow-500 text-white px-3 py-1 mr-2"
-                onClick={() => stopService(service)}
+                onClick={handleStop}
             >
                 Stop
             </button>
 
             <button
                 className="bg-blue-500 text-white px-3 py-1"
-                onClick={() => restartService(service)}
+                onClick={handleRestart}
             >
                 Restart
             </button>
+
+            <p className="mt-3 text-green-600">{message}</p>
 
         </div>
     );

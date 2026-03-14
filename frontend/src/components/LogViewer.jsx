@@ -8,9 +8,12 @@ function LogViewer() {
     const loadLog = () => {
 
         axios
-            .get("http://localhost:5000/api/logs/view?name=auth.log")
+            .get("http://localhost:5000/api/logs/view?name=dpkg.log")
             .then(res => {
                 setLog(res.data.content);
+            })
+            .catch(() => {
+                setLog("Failed to load logs");
             });
 
     };
@@ -28,7 +31,7 @@ function LogViewer() {
                 Load Logs
             </button>
 
-            <pre className="bg-black text-green-400 p-4 h-64 overflow-scroll">
+            <pre className="bg-black text-green-400 p-4 h-64 overflow-auto">
                 {log}
             </pre>
 
