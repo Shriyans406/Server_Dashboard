@@ -5,6 +5,8 @@ import ProcessTable from "./ProcessTable";
 import ServicePanel from "./ServicePanel";
 import LogViewer from "./LogViewer";
 
+import SystemCharts from "./SystemCharts";
+
 function Dashboard() {
 
   const [cpu, setCPU] = useState("");
@@ -59,6 +61,7 @@ function Dashboard() {
         </div>
 
       </div>
+      <SystemCharts />
       <ProcessTable />
       <ServicePanel />
       <LogViewer />
